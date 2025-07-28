@@ -31,3 +31,32 @@ function generarRecursos(nave) {
 }
 
 generarRecursos(nave);
+
+// Fase 2 - registro de tripulantes
+function agregarTripulante(nombre, rol, salud) {
+    if (salud < 0 || salud > 100) {
+        console.log("El nivel de salud debe estar entre 0 y 100.");
+        return;
+    }
+    const tripulante = {
+        nombre: nombre,
+        rol: rol,
+        salud: salud
+    };
+    nave.tripulacion.push(tripulante);
+}
+
+// crear 10 tripulantes
+const roles = ["Piloto", "Ingeniero", "Médico", "Científico", "Técnico", "Comunicaciones", "Seguridad", "Logística", "Explorador", "Mecánico"];
+roles.forEach((rol, i) => {
+    const nombre = `Tripulante ${i + 1}`;
+    const salud = Math.floor(Math.random() * 101); // Salud aleatoria entre 0 y 100
+    agregarTripulante(nombre, rol, salud);
+});
+
+function mostrarTripulacion(nave) {
+    console.log("Tripulación de la nave:");
+    nave.tripulacion.forEach(tripulante => {
+        console.log(`Nombre: ${tripulante.nombre}, Rol: ${tripulante.rol}, Salud: ${tripulante.salud}`);
+    });
+}
