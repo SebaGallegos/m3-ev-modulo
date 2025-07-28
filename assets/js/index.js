@@ -1,4 +1,10 @@
-// Fase 1 - configuración de misión
+/**
+ * Lógica de juego de misión espacial
+ * 
+ * @author Sebastián Gallegos Frías
+ */
+
+// Objeto nave que contiene la configuración de la misión espacial
 const nave = {
     distanciaEstimada: 0,
     estadoMision: true,
@@ -10,6 +16,9 @@ const nave = {
         energia: 100
     },
     tripulacion: [],
+    /**
+     * Muestra el estado general de la misión por consola.
+     */
     mostrarEstado: function() {
         let estado = `\n=== ESTADO DE LA MISIÓN ===\n`;
         estado += `Estado: ${this.estadoMision ? "En curso" : "Finalizada"}\n`;
@@ -18,6 +27,9 @@ const nave = {
         estado += `Distancia estimada a destino: ${this.distanciaEstimada} km\n`;
         console.log(estado);
     },
+    /**
+     * Muestra el estado de los recursos por consola.
+     */
     reportarRecursos: function() {
         let recursos = "Recursos disponibles:\n";
         recursos += `Agua: ${this.recursos.agua.toString().padStart(3, ' ')} litros\n`;
@@ -33,7 +45,12 @@ function generarRecursos(nave) {
     nave.recursos.energia = Math.floor(Math.random() * 50) + 50; // Entre 50 y 150 unidades
 }
 
-// Fase 2 - registro de tripulantes
+/**
+ * Agrega un tripulante a la nave.
+ * @param {string} nombre - Nombre del tripulante.
+ * @param {string} rol - Rol del tripulante.
+ * @param {number} salud - Nivel de salud del tripulante (0-100).
+ */
 function agregarTripulante(nombre, rol, salud) {
     if (salud < 0 || salud > 100) {
         console.log("El nivel de salud debe estar entre 0 y 100.");
@@ -63,24 +80,36 @@ function mostrarTripulacion(nave) {
     console.log(mensaje);
 }
 
-// Fase 4 - Reportes y lógica avanzada
-function promedioSalud(tripulacion) {
+/**
+ * Calcula y muestra el promedio de salud de la tripulación.
+ * @param {Object} nave Objeto nave.
+ */
+function promedioSalud(nave) {
     let suma = 0;
-    for (let i = 0; i < tripulacion.length; i++) {
-        suma += tripulacion[i].salud;
+    for (let i = 0; i < nave.tripulacion.length; i++) {
+        suma += nave.tripulacion[i].salud;
     }
-    const promedio = tripulacion.length > 0 ? (suma / tripulacion.length) : 0;
+    const promedio = nave.tripulacion.length > 0 ? (suma / nave.tripulacion.length) : 0;
     console.log("Promedio de salud de la tripulación: ".concat(promedio.toFixed(2)));
 }
 
-function cantidadSaludBaja(tripulacion) {
+/**
+ * Calcula y muestra la cantidad de tripulantes con salud menor a 50.
+ * @param {Object} nave - Objeto nave.
+ */
+function cantidadSaludBaja(nave) {
     let contador = 0;
-    for (let i = 0; i < tripulacion.length; i++) {
-        if (tripulacion[i].salud < 50) contador++;
+    for (let i = 0; i < nave.tripulacion.length; i++) {
+        if (nave.tripulacion[i].salud < 50) contador++;
     }
     console.log(`Cantidad de tripulantes con salud menor a 50: ${contador}`);
 }
 
+/**
+ * Muestra el estado detallado de los recursos de la nave.
+ * 
+ * @param {Object} nave Objeto nave.
+ */
 function estadoRecursos(nave) {
     let mensaje = "Estado de los recursos:\n";
     mensaje += `- Agua: ${nave.recursos.agua.toString().padStart(3, ' ')} litros\n`;
@@ -89,7 +118,10 @@ function estadoRecursos(nave) {
     console.log(mensaje);
 }
 
-// Fase 3
+/**
+ * Simula la misión espacial, gestionando recursos y salud de la tripulación por día.
+ * Solicita nombre y modelo de la nave, y reinicia el estado para cada simulación.
+ */
 function simularMision() {
     // Solicitar nombre y modelo de la nave al usuario al inicio de la simulación
     const nombreNave = prompt("Ingrese el nombre de la nave:");
@@ -114,8 +146,8 @@ function simularMision() {
         mostrarTripulacion(nave);
         nave.mostrarEstado();
         nave.reportarRecursos();
-        promedioSalud(nave.tripulacion);
-        cantidadSaludBaja(nave.tripulacion);
+        promedioSalud(nave);
+        cantidadSaludBaja(nave);
         estadoRecursos(nave);
 
         const opcion = prompt("Elige una acción: 1. Explorar 2. Comer 3. Descansar 4. Reportar estado (1-4): ");
@@ -155,22 +187,22 @@ function simularMision() {
                 nave.mostrarEstado();
                 nave.reportarRecursos();
                 mostrarTripulacion(nave);
-                promedioSalud(nave.tripulacion);
-                cantidadSaludBaja(nave.tripulacion);
+                promedioSalud(nave);
+                cantidadSaludBaja(nave);
                 estadoRecursos(nave);
                 break;
             default:
                 console.log("Opción no válida. Por favor, elige una opción entre 1 y 4.");
-                continue; // Volver al inicio del ciclo
+                continue;
         }
         // Verificar recursos
         if (nave.recursos.agua < 0 || nave.recursos.comida < 0 || nave.recursos.energia < 0) {
-            console.log("¡Recursos agotados! La misión ha fracasado.");
+            console.log("Recursos agotados, la misión ha fracasado.");
             nave.estadoMision = false;
         }
         // Verificar salud de la tripulación
         if (nave.tripulacion.some(tripulante => tripulante.salud <= 0)) {
-            console.log("¡Un tripulante ha caído! La misión ha fracasado.");
+            console.log("Un tripulante ha caído, la misión ha fracasado.");
             nave.estadoMision = false;
         }
         dias++;
