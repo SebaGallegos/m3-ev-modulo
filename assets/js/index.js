@@ -11,16 +11,19 @@ const nave = {
     },
     tripulacion: [],
     mostrarEstado: function() {
-        console.log(`Estado de la misión: ${this.estadoMision ? "En curso" : "Finalizada"}`);
-        console.log(`Modelo de nave: ${this.modelo}`);
-        console.log(`Nombre de la nave: ${this.nombre}`);
-        console.log(`Distancia estimada a destino: ${this.distanciaEstimada} km`);
+        let estado = `\n=== ESTADO DE LA MISIÓN ===\n`;
+        estado += `Estado: ${this.estadoMision ? "En curso" : "Finalizada"}\n`;
+        estado += `Modelo: ${this.modelo}\n`;
+        estado += `Nombre: ${this.nombre}\n`;
+        estado += `Distancia estimada a destino: ${this.distanciaEstimada} km\n`;
+        console.log(estado);
     },
     reportarRecursos: function() {
-        console.log("Recursos disponibles:");
-        console.log(`Agua: ${this.recursos.agua} litros`);
-        console.log(`Comida: ${this.recursos.comida} kg`);
-        console.log(`Energía: ${this.recursos.energia} unidades`);
+        let recursos = "Recursos disponibles:\n";
+        recursos += `Agua: ${this.recursos.agua.toString().padStart(3, ' ')} litros\n`;
+        recursos += `Comida: ${this.recursos.comida.toString().padStart(3, ' ')} kg\n`;
+        recursos += `Energía: ${this.recursos.energia.toString().padStart(3, ' ')} unidades\n`;
+        console.log(recursos);
     },
 }
 
@@ -53,14 +56,57 @@ roles.forEach((rol, i) => {
 });
 
 function mostrarTripulacion(nave) {
-    console.log("Tripulación de la nave:");
+    let mensaje = "\n--- Tripulación de la nave ---\n";
     nave.tripulacion.forEach(tripulante => {
-        console.log(`Nombre: ${tripulante.nombre}, Rol: ${tripulante.rol}, Salud: ${tripulante.salud}`);
+        mensaje += `Nombre: ${tripulante.nombre.padEnd(15)} | Rol: ${tripulante.rol.padEnd(12)} | Salud: ${tripulante.salud.toString().padStart(3, ' ')}\n`;
     });
+    console.log(mensaje);
+}
+
+// Fase 4 - Reportes y lógica avanzada
+function promedioSalud(tripulacion) {
+    let suma = 0;
+    for (let i = 0; i < tripulacion.length; i++) {
+        suma += tripulacion[i].salud;
+    }
+    const promedio = tripulacion.length > 0 ? (suma / tripulacion.length) : 0;
+    console.log("Promedio de salud de la tripulación: ".concat(promedio.toFixed(2)));
+}
+
+function cantidadSaludBaja(tripulacion) {
+    let contador = 0;
+    for (let i = 0; i < tripulacion.length; i++) {
+        if (tripulacion[i].salud < 50) contador++;
+    }
+    console.log(`Cantidad de tripulantes con salud menor a 50: ${contador}`);
+}
+
+function estadoRecursos(nave) {
+    let mensaje = "Estado de los recursos:\n";
+    mensaje += `- Agua: ${nave.recursos.agua.toString().padStart(3, ' ')} litros\n`;
+    mensaje += `- Comida: ${nave.recursos.comida.toString().padStart(3, ' ')} kg\n`;
+    mensaje += `- Energía: ${nave.recursos.energia.toString().padStart(3, ' ')} unidades\n`;
+    console.log(mensaje);
 }
 
 // Fase 3
 function simularMision() {
+    // Solicitar nombre y modelo de la nave al usuario al inicio de la simulación
+    const nombreNave = prompt("Ingrese el nombre de la nave:");
+    const modeloNave = prompt("Ingrese el modelo de la nave:");
+    nave.nombre = nombreNave ? nombreNave : "Sin nombre";
+    nave.modelo = modeloNave ? modeloNave : "Sin modelo";
+    // Reiniciar recursos y estado de misión
+    nave.distanciaEstimada = 0;
+    nave.estadoMision = true;
+    nave.recursos.agua = 100;
+    nave.recursos.comida = 100;
+    nave.recursos.energia = 100;
+    // Reiniciar salud de la tripulación
+    nave.tripulacion.forEach(tripulante => {
+        tripulante.salud = Math.floor(Math.random() * 101);
+    });
+
     let dias = 0;
     while (nave.estadoMision && dias < 30) { // Simular hasta 30 días
         console.clear();
@@ -68,6 +114,9 @@ function simularMision() {
         mostrarTripulacion(nave);
         nave.mostrarEstado();
         nave.reportarRecursos();
+        promedioSalud(nave.tripulacion);
+        cantidadSaludBaja(nave.tripulacion);
+        estadoRecursos(nave);
 
         const opcion = prompt("Elige una acción: 1. Explorar 2. Comer 3. Descansar 4. Reportar estado (1-4): ");
         
@@ -102,9 +151,13 @@ function simularMision() {
                 console.log("Descanso realizado, salud de la tripulación recuperada.");
                 break;
             case '4': // Reportar estado
+                console.clear();
                 nave.mostrarEstado();
                 nave.reportarRecursos();
                 mostrarTripulacion(nave);
+                promedioSalud(nave.tripulacion);
+                cantidadSaludBaja(nave.tripulacion);
+                estadoRecursos(nave);
                 break;
             default:
                 console.log("Opción no válida. Por favor, elige una opción entre 1 y 4.");
